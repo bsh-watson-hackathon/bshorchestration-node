@@ -1,0 +1,29 @@
+{
+  "movie_food_pairing": [
+    {
+      "movie":"drama",
+      "recipe_name": "Chicken Dish",
+      "recipe":"https://ui.qa.cogads.weather.com/wa/ec89fa91-9b0c-4a08-90fd-25977225defe?liid=[1154,489]&iid=[1154,489,2446,2204,1271,17,725,1325,102009,741,1554,5989]&cids=[]&did=34258&tid=1220"
+    },
+    {
+      "movie":"family",
+      "recipe_name": "Turkey Meatball",
+      "recipe":"https://ui.qa.cogads.weather.com/wa/ec89fa91-9b0c-4a08-90fd-25977225defe?liid=[1229]&iid=[1229,2106,1295,1038,885,1967,1325,1324,1890,102081,486]&cids=[]&did=27274&tid=1067"
+    },
+    {
+      "movie":"action",
+      "recipe_name": "Chicken Wing Wings",
+      "recipe":"https://ui.qa.cogads.weather.com/wa/ec89fa91-9b0c-4a08-90fd-25977225defe?liid=[]&iid=[2119,885,5559,102086,2196,1998,2195]&cids=[]&did=34241&tid=909"
+    },
+    {
+      "movie":"comedy",
+      "recipe_name": "Greek Yogurt Sandwich",
+      "recipe":"https://ui.qa.cogads.weather.com/wa/ec89fa91-9b0c-4a08-90fd-25977225defe?liid=[5552]&iid=[5552,6082,3892,5933,102009]&cids=[]&did=16942&tid=629"
+    },
+    {
+      "movie":"romance",
+      "recipe_name": "Swiss Cheese Fondue",
+      "recipe":"https://ui.qa.cogads.weather.com/wa/ec89fa91-9b0c-4a08-90fd-25977225defe?liid=[]&iid=[770,885,1495,2567,102081,525,269,1648,226,1550]&cids=[]&did=16669&tid=369"
+    }
+  ]
+}
