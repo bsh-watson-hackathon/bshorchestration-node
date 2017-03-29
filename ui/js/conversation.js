@@ -170,7 +170,25 @@ var Conversation = (function() {
           console.log('Server: ' + e.data);
           var handsupdate = JSON.parse(e.data);
           if (handsupdate["hands_update"]){
-
+              var message = {
+                  "input":{
+                      "text":""
+                  },
+                  "context":{
+                      "handsupdate":true
+                  }
+              }
+              Api.postConversation(message);
+          }else if (!handsupdate["hands_update"]){
+              var message = {
+                  "input":{
+                      "text":""
+                  },
+                  "context":{
+                      "handsupdate":false
+                  }
+              }
+              Api.postConversation(message);
           }
       };
   }

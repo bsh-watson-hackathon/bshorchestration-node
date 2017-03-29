@@ -94,7 +94,7 @@ const updateMessage = (input, response, httpresponse) => {
 
 
 
-                    return {};
+
                 });
 
 
@@ -107,7 +107,7 @@ const updateMessage = (input, response, httpresponse) => {
                     console.log('error:', error); // Print the error if one occurred
                     console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
                     //return result
-                    return {};
+
                 });
 
 
@@ -196,10 +196,7 @@ const updateMessage = (input, response, httpresponse) => {
                 });
 
 
-            } else {
-                response.output.text = "Sorry I did not get that";
-                return response;
-            }
+            } 
         } else {
             return response;
         }
