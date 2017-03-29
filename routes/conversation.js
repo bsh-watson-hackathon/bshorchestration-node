@@ -53,7 +53,19 @@ const conversation = watson.conversation({
     version_date: '2016-10-21',
     version: 'v1'
 });
+
+const nlu = watson.natural_language_understanding({
+    // If unspecified here, the CONVERSATION_USERNAME and CONVERSATION_PASSWORD env properties will be checked
+    // After that, the SDK will fall back to the bluemix-provided VCAP_SERVICES environment property
+    // username: '<username>',
+    // password: '<password>',
+    url:'https://gateway.watsonplatform.net/natural-language-understanding/api',
+    version_date: '2017-02-27',
+    version: 'v1'
+});
 const workspace = process.env.WORKSPACE_ID || '<workspace-id>';
+const customModelId = process.env.NLU_CUSTOM_MODEL_ID || '<custom-model-id>';
+
 
 
 /**
@@ -227,7 +239,41 @@ const updateMessage = (input, response, httpresponse) => {
     return response;
 };
 
+const doNLU = (text,result,payload,callback) => {
+    console.log("sending to NLU:"+text);
+    nlu.analyze({
+        'html': text, // Buffer or String
+        'features': {
+            'entities': {
+                'model': customModelId
+            }
+
+        }
+    }, function(err, response) {
+        if (err)
+            console.log('NLU error:', err);
+        else
+            console.log("NLU Result"+JSON.stringify(response, null, 2));
+            //convert entities to conversation format
+        if (response && response.entities) {
+            var entities = response.entities.map(function (item) {
+                var resultEntity = {};
+                resultEntity.entity = item.type;
+                resultEntity.value = item.text;
+                resultEntity.location = [0, 0];
+                return resultEntity;
+            })
+            payload.entities = entities;
+        }
+        sendMessage(payload,result,callback);
+
+
+    });
+}
+
 const sendMessage = (payload, result, callback) => {
+
+
     console.log("sending to conversation: " + JSON.stringify(payload, null, 2));
     conversation.message(payload, (error, data) => {
         if (error) {
@@ -264,8 +310,16 @@ module.exports = function (app) {
             context: req.body.context || {},
             input: req.body.input || {}
         };
+        console.log("message:"+JSON.stringify(payload));
+        if (!payload.input.text || payload.input.text.length<=0      ){
+            sendMessage(payload,res,updateMessage);
+        }else{
+            doNLU(payload.input.text,res,payload,updateMessage);
+        }
+
+
 
         // Send the input to the conversation service
-        sendMessage(payload, res, updateMessage);
+       // sendMessage(payload, res, updateMessage);
     });
 };
