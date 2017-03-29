@@ -179,6 +179,16 @@ input#user-input:-moz-placeholder {
     border-top-right-radius: 0.625rem;
     background: rgba(0,0,0,0.3);
 }
+#ingredients{
+    position: absolute;
+    bottom:  5.625rem;
+    left: 30rem;
+    padding-top: 0.3125rem;
+    margin-left: 1.25rem;
+    border-top-left-radius: 0.625rem;
+    border-top-right-radius: 0.625rem;
+    background: rgba(0,0,0,0.3);
+}
 
 #chat-flow {
     text-align: left;

@@ -34,12 +34,12 @@ var cloudant = require('cloudant')(process.env.CLOUDANT_URL);
 var dbname = 'userdb';
 var userdb = null;
 
-try{
+try {
     userdb = cloudant.db.create(dbname);
-    if (userdb != null){
+    if (userdb != null) {
         userdb = cloudant.db.use(dbname);
     }
-}catch(e){
+} catch (e) {
     userdb = cloudant.db.use(dbname);
 }
 // var logs = null;
@@ -72,7 +72,50 @@ const updateMessage = (input, response, httpresponse) => {
         if (response.output.action) {
             //got an action
 
-            if (response.output.action = "recipeSearch" && response.context.recipe) {
+            if (response.output.action === "startRecording") {
+                // do the start recording stuff
+
+                request('https://bsh-image-recognition.mybluemix.net/start_recording', function (error, videoResponse, body) {
+                    console.log('error:', error); // Print the error if one occurred
+                    console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
+                    //return result
+                    return {};
+                });
+
+
+            }
+            if (response.output.action === "stopRecording") {
+                // do the start recording stuff
+                request('https://bsh-image-recognition.mybluemix.net/stop_recording', function (error, videoResponse, body) {
+                    console.log('error:', error); // Print the error if one occurred
+                    console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
+                    //return result
+                    var videoURL = JSON.parse(body).url;
+
+                    // now call the recipe put api
+
+                  /*  request({
+                        url: 'https://bshrecipes.mybluemix.net/recipes/'+recipeId+'/step/'+recipeStep+'/video',
+                        method: "PUT",
+                        body: videoURL
+                    }, function (error, videoResponse, body) {
+                        console.log('error:', error); // Print the error if one occurred
+                        console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
+                        //return result
+                        return {};
+                    });*/
+
+
+
+                    return {};
+                });
+
+
+            }
+
+
+            if (response.output.action === "recipeSearch" && response.context.recipe) {
+                //recipe search
 
                 //first get user stuff
                 var message = {
@@ -80,21 +123,34 @@ const updateMessage = (input, response, httpresponse) => {
                     input: {},
                     context: response.context,
 
+
                 }
 
 
-                    var user = response.context.user;
-                    //user = 'roland';
-                    console.log("***user***" + user);
-                    userdb.find({selector: {name: user}}, function (er, result) {
-                        if (er) {
-                            throw er;
-                        }
-                        if (result.docs.length > 0) {
-                            console.log('Found user in the database.');
-                            message.context.user = result.docs[0];
+                var user = response.context.user;
+                //user = 'roland';
+                console.log("***user***" + user);
+                userdb.find({selector: {name: user}}, function (er, result) {
+                    if (er) {
+                        throw er;
+                    }
+                    if (result.docs.length > 0) {
+                        console.log('Found user in the database.');
+                        message.context.user = result.docs[0];
 
+                    }
+
+                    // now get fridge content
+
+                    request('https://bsh-image-recognition.mybluemix.net/fridge_contents', function (error, fridgeresponse, body) {
+                        console.log('error:', error); // Print the error if one occurred
+                        console.log('statusCode:', fridgeresponse && fridgeresponse.statusCode); // Print the response status code if a response was received
+                        //return result
+                        if (fridgeresponse.statusCode===200) {
+                            var fridgeContent = JSON.parse(body);
+                            message.context.fridgeContent = fridgeContent;
                         }
+
 
                         request('https://bshrecipes.mybluemix.net/recipesmetadata?title=' + response.context.recipe, function (error, reciperesponse, body) {
                             console.log('error:', error); // Print the error if one occurred
@@ -132,12 +188,11 @@ const updateMessage = (input, response, httpresponse) => {
 
 
                         });
-
-
                     });
 
 
 
+                });
 
 
             } else {
@@ -178,7 +233,7 @@ const sendMessage = (payload, result, callback) => {
         var answer = updateMessage(payload, data, result);
         if (answer && answer.output && answer.output.text && answer.output.text.length > 0) {
             console.log("returning" + JSON.stringify(answer));
-            return result.json(answer);
+            return result.send(answer);
         }
     });
 }

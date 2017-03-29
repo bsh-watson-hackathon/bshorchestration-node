@@ -53,6 +53,7 @@ var Conversation = (function() {
     chatSetup();
     initEnterSubmit();
     setupInputBox();
+    setupGetHandsWSConnection();
   }
 
   // Hide chat box until there are messages,
@@ -110,6 +111,7 @@ var Conversation = (function() {
       document.body.appendChild(dummy);
     }
 
+
     function adjustInput() {
       if (input.value === '') {
         // If the input box is empty, remove the underline
@@ -149,6 +151,28 @@ var Conversation = (function() {
 
     // Trigger the input event once to set up the input box and dummy element
     Common.fireEvent(input, 'input');
+  }
+
+  function setupGetHandsWSConnection(){
+      var connection = new WebSocket('wss://bsh-image-recognition.mybluemix.net/ws/hands_update');
+      connection.onopen = function () {
+          connection.send('Ping'); // Send the message 'Ping' to the server
+          console.log("hands WS connection opened");
+      };
+
+// Log errors
+      connection.onerror = function (error) {
+          console.log('WebSocket Error ' + error);
+      };
+
+// Log messages from the server
+      connection.onmessage = function (e) {
+          console.log('Server: ' + e.data);
+          var handsupdate = JSON.parse(e.data);
+          if (handsupdate["hands_update"]){
+
+          }
+      };
   }
 
   // Retrieve the value of the input box
@@ -198,6 +222,58 @@ var Conversation = (function() {
         return;
       }
       var messageDiv = buildMessageDomElement(newPayload, isUser);
+
+     console.log(JSON.stringify(newPayload,null,2));
+
+     if (newPayload.context && newPayload.context.recipeInformation && newPayload.context.recipeInformation.selectedRecipe){
+
+      // alert(newPayload.context.recipeInformation.selectedRecipe);
+         var ingredients = document.getElementById('ingredients');
+         var ingredientsHTML;
+         ingredientsHTML='<h2>Ingredients for '+newPayload.context.recipeInformation.selectedRecipe.name+'</h2><ul>'
+         for (var i=0;i<newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists.length;i++){
+             ingredientsHTML+='<li>'+newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].name+"<ul>";
+           for (var j=0;j<newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].ingredients.length;j++){
+
+               var ingredient = newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].ingredients[j];
+               var fridgeItems ={};
+               if (newPayload.context.fridgeContent ){
+                   fridgeItems=newPayload.context.fridgeContent;
+               }
+
+               var inFridge=false
+               for (var item in fridgeItems){
+                   if (ingredient.toLowerCase().indexOf(item)>-1){
+                     inFridge = true;
+                   }
+
+               }
+
+               if (inFridge){
+                   ingredient+=" (in fridge)";
+               }else {
+                   ingredient+=" (on shopping list)";
+               }
+               ingredientsHTML+='<li>'+ingredient+'</li>';
+           }
+
+             ingredientsHTML+='</ul></li>';
+         }
+         ingredientsHTML+='</ul>'
+         var fridgeHTML="<h2>Fridge Content:</h2><ul>"
+
+         for (var item in fridgeItems){
+             if(fridgeItems.hasOwnProperty(item)){
+                 fridgeHTML+="<li>"+fridgeItems[item]+" "+item+"</li>";
+             }
+
+         }
+         fridgeHTML+="</ul>";
+         ingredientsHTML+=fridgeHTML;
+         ingredients.innerHTML=ingredientsHTML;
+
+
+     }
 
 
       var chatBoxElement = document.getElementById(ids.chatFlow);
