@@ -59,13 +59,12 @@ const nlu = watson.natural_language_understanding({
     // After that, the SDK will fall back to the bluemix-provided VCAP_SERVICES environment property
     // username: '<username>',
     // password: '<password>',
-    url:'https://gateway.watsonplatform.net/natural-language-understanding/api',
+    url: 'https://gateway.watsonplatform.net/natural-language-understanding/api',
     version_date: '2017-02-27',
     version: 'v1'
 });
 const workspace = process.env.WORKSPACE_ID || '<workspace-id>';
 const customModelId = process.env.NLU_CUSTOM_MODEL_ID || '<custom-model-id>';
-
 
 
 /**
@@ -82,7 +81,7 @@ const updateMessage = (input, response, httpresponse) => {
     } else {
 
         if (response.output.action) {
-            console.log("got action:"+JSON.stringify(response.output.action));
+            console.log("got action:" + JSON.stringify(response.output.action));
             //got an action
             if (response.output.action.stopRecording) {
                 // do the start recording stuff
@@ -91,24 +90,29 @@ const updateMessage = (input, response, httpresponse) => {
                     console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
                     //return result
                     var videoURL = JSON.parse(body).url;
-                    console.log("got videoURL:"+videoURL);
+                    var videoJSON = {
+                        "value": videoURL
+                    }
+                    console.log("got videoURL:" + videoURL);
 
-                    var recipeId=response.context.recipeInformation.selectedRecipe.id;
-                    var recipeStep=response.context["current_step"];
+                    var recipeId = response.context.recipeInformation.selectedRecipe.id;
+                    var recipeStep = response.context["current_step"];
 
                     // now call the recipe put api
 
-                      request({
-                     url: 'https://bshrecipes.mybluemix.net/recipes/'+recipeId+'/step/'+recipeStep+'/video',
-                     method: "PUT",
-                     body: videoURL
-                     }, function (error, videoResponse, body) {
-                     console.log('error putting recipe video:', error); // Print the error if one occurred
-                     console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
+                    request({
+                        url: 'https://bshrecipes.mybluemix.net/recipes/' + recipeId + '/step/' + recipeStep + '/video',
+                        headers:{
+                            'content-type':'application/json'
+                        },
+                        method: "PUT",
+                        body: videoJSON,
+                        json: true
+                    }, function (error, videoResponse, body) {
+                        console.log('error putting recipe video:', error); // Print the error if one occurred
+                        console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
 
-                     });
-
-
+                    });
 
 
                 });
@@ -130,10 +134,8 @@ const updateMessage = (input, response, httpresponse) => {
             }
 
 
-
             if (response.output.action.recipeSearch && response.context.recipe) {
                 //recipe search
-
 
 
                 //first get user stuff
@@ -165,7 +167,7 @@ const updateMessage = (input, response, httpresponse) => {
                         console.log('error:', error); // Print the error if one occurred
                         console.log('statusCode:', fridgeresponse && fridgeresponse.statusCode); // Print the response status code if a response was received
                         //return result
-                        if (fridgeresponse.statusCode===200) {
+                        if (fridgeresponse.statusCode === 200) {
                             var fridgeContent = JSON.parse(body);
                             message.context.fridgeContent = fridgeContent;
                         }
@@ -210,7 +212,6 @@ const updateMessage = (input, response, httpresponse) => {
                     });
 
 
-
                 });
 
 
@@ -239,8 +240,8 @@ const updateMessage = (input, response, httpresponse) => {
     return response;
 };
 
-const doNLU = (text,result,payload,callback) => {
-    console.log("sending to NLU:"+text);
+const doNLU = (text, result, payload, callback) => {
+    console.log("sending to NLU:" + text);
     nlu.analyze({
         'html': text, // Buffer or String
         'features': {
@@ -249,12 +250,12 @@ const doNLU = (text,result,payload,callback) => {
             }
 
         }
-    }, function(err, response) {
+    }, function (err, response) {
         if (err)
             console.log('NLU error:', err);
         else
-            console.log("NLU Result"+JSON.stringify(response, null, 2));
-            //convert entities to conversation format
+            console.log("NLU Result" + JSON.stringify(response, null, 2));
+        //convert entities to conversation format
         if (response && response.entities) {
             var entities = response.entities.map(function (item) {
                 var resultEntity = {};
@@ -263,9 +264,9 @@ const doNLU = (text,result,payload,callback) => {
                 resultEntity.location = [0, 0];
                 return resultEntity;
             })
-            payload.entities = entities;
+            payload.nluentities = entities;
         }
-        sendMessage(payload,result,callback);
+        sendMessage(payload, result, callback);
 
 
     });
@@ -310,16 +311,15 @@ module.exports = function (app) {
             context: req.body.context || {},
             input: req.body.input || {}
         };
-        console.log("message:"+JSON.stringify(payload));
-        if (!payload.input.text || payload.input.text.length<=0      ){
-            sendMessage(payload,res,updateMessage);
-        }else{
-            doNLU(payload.input.text,res,payload,updateMessage);
+        console.log("message:" + JSON.stringify(payload));
+        if (!payload.input.text || payload.input.text.length <= 0) {
+            sendMessage(payload, res, updateMessage);
+        } else {
+            doNLU(payload.input.text, res, payload, updateMessage);
         }
 
 
-
         // Send the input to the conversation service
-       // sendMessage(payload, res, updateMessage);
+        // sendMessage(payload, res, updateMessage);
     });
 };
