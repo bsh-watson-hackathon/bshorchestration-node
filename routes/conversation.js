@@ -70,6 +70,7 @@ const updateMessage = (input, response, httpresponse) => {
     } else {
 
         if (response.output.action) {
+            console.log("got action:"+JSON.stringify(response.output.action));
             //got an action
             if (response.output.action.stopRecording) {
                 // do the start recording stuff
@@ -78,19 +79,22 @@ const updateMessage = (input, response, httpresponse) => {
                     console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
                     //return result
                     var videoURL = JSON.parse(body).url;
+                    console.log("got videoURL:"+videoURL);
+
+                    var recipeId=response.context.recipeInformation.selectedRecipe.id;
+                    var recipeStep=response.context["current_step"];
 
                     // now call the recipe put api
 
-                    /*  request({
+                      request({
                      url: 'https://bshrecipes.mybluemix.net/recipes/'+recipeId+'/step/'+recipeStep+'/video',
                      method: "PUT",
                      body: videoURL
                      }, function (error, videoResponse, body) {
-                     console.log('error:', error); // Print the error if one occurred
+                     console.log('error putting recipe video:', error); // Print the error if one occurred
                      console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
-                     //return result
-                     return {};
-                     });*/
+
+                     });
 
 
 
@@ -117,6 +121,8 @@ const updateMessage = (input, response, httpresponse) => {
 
             if (response.output.action.recipeSearch && response.context.recipe) {
                 //recipe search
+
+
 
                 //first get user stuff
                 var message = {
@@ -196,7 +202,7 @@ const updateMessage = (input, response, httpresponse) => {
                 });
 
 
-            } 
+            }
         } else {
             return response;
         }
