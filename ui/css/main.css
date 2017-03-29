@@ -20,41 +20,29 @@ html {
 }
 
 body {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    background: url("../images/bg-strip.png");
-    background-position: center;
-}
-
-.box {
-    display: flex;
-    flex-flow: column;
-    height: 100%;
+    margin: 0;
     width: 100%;
-    overflow-x: hidden;
+    height: 100%;
+    position: relative;
 }
 
-.box header,footer {
-    flex: 0 1 auto;
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    overflow: hidden;
 }
 
-.box content {
-    /*flex: 1;
-    display:flex;
-    overflow-x: hidden;*/
+#dark-overlay {
+    background: black;
+    opacity: 0.62;
+    z-index: 40;
 }
 
-.centered-content {
-    text-align: center;
-}
-
-.content-wrapper {
-    min-width: 610px;
-    max-width: 1100px;
-    margin: 0 auto;
-    /*height: 100%;
-    width: 100%;*/
+#clear-overlay {
+    background: transparent;
+    z-index: 60;
 }
 
 .between-overlays {
@@ -117,6 +105,31 @@ body {
     margin-left: -0.625rem;
 }
 
+#svg_wrapper {
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+    min-width: 325px;
+    max-width: 1100px;
+}
+
+#svg_size {
+    font-size: 0;
+    position: relative;
+    height: 0;
+    width: 100%;
+    padding: 0;
+    padding-bottom: calc( 100% * 704 / 1024 );
+}
+
+#svg_canvas{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
 .nav_active {
     animation: nav 0.8s infinite linear;
 }
@@ -125,81 +138,4 @@ body {
     100% {
         fill: green;
     }
-}
-
-header h1 {
-    color:#1428A0;
-    font-size: 3.7em;
-    font-weight: 700;
-}
-
-.samsung {
-	height: 225px;
-    margin: -106px -19px -96px 0;
-}
-.text-btn {
-	background: darkcyan;
-    color: white;
-    padding: 1px 8px;
-    border-radius: 5px;
-}
-.text-btn:hover {
-	border: 1px solid;
-	cursor: pointer;
-	padding: 1px 7px;
-	text-decoration: none;
-}
-.restart {
-	height: 50px;
-    position: fixed;
-    margin: -13px 0 0 541px;
-    cursor: pointer;
-    border: 1px solid;
-}
-.restart:hover {
-	border: 1px solid;
-}
-#accordion {
-	width: 80%;
-	min-height: 250px;
-}
-.ui-accordion .ui-accordion-content {
-	min-height: 140px;
-}
-.ui-state-active {
-	border: 1px solid #222 !important;
-    background: #777 !important;
-}
-.push-right {
-	float: right;
-    background: #4BC1B1;
-    padding: 4px 10px;
-    margin-top: -3px;
-    border-radius: 5px;
-}
-.non-tech {
-	background: #4178BE;
-	border-radius: 4px;
-}
-.modal-title {
-	text-align: center;
-    margin-top: 10px;
-}
-.modal-content {
-	background: url(../images/bg-strip.png);
-    background-position: center;
-}
-.thumb {
-	height: 16px;
-    margin-right: 10px;
-    cursor: pointer;
-}
-.thumb:hover {
-	border: 1px solid;
-}
-.weather-channel {
-	width: 400px;
-}
-.loading {
-	height: 250px;
 }

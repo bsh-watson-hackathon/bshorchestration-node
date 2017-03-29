@@ -26,6 +26,7 @@ var Conversation = (function() {
   'use strict';
   var ids = {
     userInput: 'user-input',
+    userInputDummy: 'user-input-dummy',
     chatFlow: 'chat-flow',
     chatScrollWrapper: 'chat-scroll-wrapper'
   };
@@ -38,25 +39,20 @@ var Conversation = (function() {
     user: 'user',
     watson: 'watson'
   };
-  var userType = 'head.svg';
 
   // Publicly accessible methods defined
   return {
     init: init,
     setMessage: setMessage,
     sendMessage: sendMessage,
-    focusInput: focusInput,
-    showDocs: showDocs,
-    showWeatherApp: showWeatherApp
+    focusInput: focusInput
   };
 
   // Initialize Conversation module
   function init() {
     chatSetup();
     initEnterSubmit();
-    // setupInputBox();
-    Api.initConversation(); // Load initial Watson greeting
-
+    setupInputBox();
   }
 
   // Hide chat box until there are messages,
@@ -75,8 +71,6 @@ var Conversation = (function() {
       currentResponsePayloadSetter.call(Api, payload);
       displayMessage(payload, authorTypes.watson);
     };
-
-
   }
 
   // Set up the input box to submit a message when enter is pressed
@@ -181,12 +175,6 @@ var Conversation = (function() {
     }
     if (!text) {
       return;
-    } else {
-    	if(text.toUpperCase().indexOf('JACK') >= 0 || text.toUpperCase().indexOf('JOHN') >= 0) {
-    		userType = 'male.png';
-    	} else if(text.toUpperCase().indexOf('JANE') >= 0) {
-    		userType = 'female.png';
-    	}
     }
     setMessage('');
 
@@ -194,53 +182,26 @@ var Conversation = (function() {
   }
 
   // Display a message, given a message payload and a message type (user or Watson)
-  // TODO: Make sure that newline characters at the end don't mess with the question mark detection
   function displayMessage(newPayload, typeValue) {
     var isUser = isUserMessage(typeValue);
     var textExists = (newPayload.input && newPayload.input.text)
       || (newPayload.output && newPayload.output.text);
     if (isUser !== null && textExists) {
-      // if (newPayload.output && Object.prototype.toString.call( newPayload.output.text ) === '[object Array]') {
-      //   newPayload.output.text = newPayload.output.text.filter(function(item) {
-      //     return item && item.length > 0;
-      //   }).join(' ');
-      // }
+      if (newPayload.output && Object.prototype.toString.call( newPayload.output.text ) === '[object Array]') {
+        newPayload.output.text = newPayload.output.text.filter(function(item) {
+          return item && item.length > 0;
+        }).join(' ');
+      }
       var dataObj = isUser ? newPayload.input : newPayload.output;
-      var text = dataObj.text;
-      if (!String(text).trim()) {
+
+      if (!String(dataObj.text).trim()) {
         return;
       }
+      var messageDiv = buildMessageDomElement(newPayload, isUser);
+
 
       var chatBoxElement = document.getElementById(ids.chatFlow);
-
-      //TODO: Improve image displaying standard
-      if(Array.isArray(text)){
-        for(var i in text){
-          var img_url;
-          if(newPayload.output){
-            if(newPayload.output.image && i == text.length-1){
-              img_url = newPayload.output.image;
-            }
-          }
-
-          if(text[i].indexOf('Here is the recipe:') == 0) {
-        	  text[i] = 'Here is the recipe: <a class="text-btn" href="' + newPayload.context.recipe + '" target="_black">' + newPayload.context.recipe_name
-        	  		+ '</a><br>Do you want store this in your FamilyHub so you can access it in your kitchen screen for preparation ?';
-          }
-          if(text[i].indexOf('link') >= 0) {
-        	  text[i] = text[i].replace("link", "<span class='text-btn' onclick='Conversation.showDocs()'>link</span>");
-          }
-          if(text[i].indexOf('Weather Channel App') >= 0) {
-        	  text[i] = text[i].replace("Weather Channel App", "<span class='text-btn' onclick='Conversation.showWeatherApp()'>The Weather Channel App</span>");
-          }
-
-          var messageDiv = buildMessageDomElement(text[i], isUser, img_url);
-          chatBoxElement.appendChild(messageDiv);
-        }
-      } else {
-        var messageDiv = buildMessageDomElement(text, isUser);
-        chatBoxElement.appendChild(messageDiv);
-      }
+      chatBoxElement.appendChild(messageDiv);
       updateChat();
     }
   }
@@ -256,31 +217,19 @@ var Conversation = (function() {
   }
 
   // Builds the message DOM element (using auxiliary function Common.buildDomElement)
-  function buildMessageDomElement(text, isUser, image_url) {
-    // var dataObj = isUser ? newPayload.input : newPayload.output;
-
-    var content = [];
-    if(isUser) content += '<img src=\'/images/' + userType + '\' />';
-    content += {
-      'tagName': 'p',
-      'html': text
-    };
-    if(!isUser) content += '<img src=\'/images/watson-avatar-logo-RGB.png\' />';
-
-    var img_msg = image_url ? '<img src='+image_url+' class=\'msg\'/>' + text : text;
-
+  function buildMessageDomElement(newPayload, isUser) {
+    var dataObj = isUser ? newPayload.input : newPayload.output;
     var messageJson = {
       // <div class='user / watson'>
       'tagName': 'div',
       'classNames': ['message-wrapper', (isUser ? authorTypes.user : authorTypes.watson)],
       'children': [{
         // <p class='user-message / watson-message'>
-        'tagName': 'div',
+        'tagName': 'p',
         'classNames': (isUser
           ? [authorTypes.user + '-message']
-          : [authorTypes.watson + '-message']),//, classes.preBar
-        // 'children': content
-        'html': (isUser ? '<img src=\'/images/' + userType + '\' />' + text : img_msg + '<img src=\'/images/watson-avatar-logo-RGB.png\' />')
+          : [authorTypes.watson + '-message', classes.preBar]),
+        'html': (isUser ? '<img src=\'/images/head.svg\' />' + dataObj.text : dataObj.text)
       }]
     };
 
@@ -298,54 +247,5 @@ var Conversation = (function() {
   // Set browser focus on the input box
   function focusInput() {
     document.getElementById(ids.userInput).focus();
-  }
-
-  //Show the modal popup window of AliveTV Support.
-  function showDocs() {
-	  $('#accordion').remove();
-	  $('.loading').show();
-	  $('.modal-title').text('AliveTV - Support');
-	  $('#the-weather-channel').hide();
-	  $('.modal-content').css('width', '46em');
-	  modal.style.display = "block";
-
-	  var query = 'Connecting to a wireless Internet network';
-	  Api.callDiscovery(query, function(response){
-		  var resJSON = $.parseJSON(response);
-		  var doc = $('#doc');
-		  var accordion = $("<div id='accordion'>");
-		  $('.loading').hide();
-
-		  $.each(resJSON.results, function(i, result){
-			  var cloneDoc = doc.clone().attr('id', 'doc-' + i).show();
-			  $(cloneDoc).find('.short-title').text(trimText(result.title));
-			  $(cloneDoc).find('.title').text(result.title);
-			  $(cloneDoc).find('.text').text(result.content[0].text);
-			  $(accordion).append(cloneDoc);
-		  });
-	  	  $('.modal-body').append(accordion);
-		  $(accordion).accordion({ header: "> div > h3" , heightStyle: "fill"});
-		  $('.thumb').click(function(e){
-		  	e.stopPropagation();
-		  	return false;
-		  });
-	  });
-
-  }
-
-  //Show the modal popup window of the Weather Channel app.
-  function showWeatherApp() {
-	  $('#accordion').hide();
-	  $('.modal-title').text('The Weather Channel');
-	  $('#the-weather-channel').show();
-	  $('.modal-content').css('width', '28.5em');
-	  modal.style.display = "block";
-  }
-
-  function trimText(s) {
-	  if(s.length > 35) {
-		  return s.substring(0, 35) + "...";
-	  }
-	  return s;
   }
 }());

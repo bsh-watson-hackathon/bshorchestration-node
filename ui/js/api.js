@@ -25,13 +25,11 @@ var Api = (function() {
   var context;
 
   var messageEndpoint = '/api/message';
-  var discoveryEndpoint = '/api/discovery';
 
   // Publicly accessible methods defined
   return {
     initConversation: initConversation,
     postConversationMessage: postConversationMessage,
-    callDiscovery: callDiscovery,
 
     // The request/response getters/setters are defined here to prevent internal methods
     // from calling the methods without any of the callbacks that are added elsewhere.
@@ -72,7 +70,7 @@ var Api = (function() {
       } else {
         Api.setWatsonPayload({output: {text: [
           'The service may be down at the moment; please check' +
-          ' <a href="https://status.ng.bluemix.net/" target="_blank" class="text-btn">here</a>' +
+          ' <a href="https://status.ng.bluemix.net/" target="_blank">here</a>' +
           ' for the current status. <br> If the service is OK,' +
           ' the app may not be configured correctly,' +
           ' please check workspace id and credentials for typos. <br>' +
@@ -86,37 +84,6 @@ var Api = (function() {
       console.error('Network error trying to send message!');
     };
 
-    http.send(JSON.stringify(data));
-  }
-  
-  
-  // Send a message request to the server
-  function callDiscovery(query, callback) {
-    var http = new XMLHttpRequest();
-    http.open('GET', discoveryEndpoint, true);
-    http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-    http.onload = function() {
-      if (http.status === 200 && http.responseText) {
-        var response = JSON.parse(http.responseText);
-        callback(response);
-      } else {
-        Api.setWatsonPayload({output: {text: [
-          'The service may be down at the moment; please check' +
-          ' <a href="https://status.ng.bluemix.net/" target="_blank" class="text-btn">here</a>' +
-          ' for the current status. <br> If the service is OK,' +
-          ' the app may not be configured correctly,' +
-          ' please check workspace id and credentials for typos. <br>' +
-          ' If the service is running and the app is configured correctly,' +
-          ' try refreshing the page and/or trying a different request.'
-        ]}});
-        console.error('Server error when trying to reply!');
-      }
-    };
-    http.onerror = function() {
-      console.error('Network error trying to send message!');
-    };
-
-    var data = {'query': query};
     http.send(JSON.stringify(data));
   }
 }());

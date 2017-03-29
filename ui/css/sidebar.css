@@ -26,8 +26,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    /*height: calc(100% - 5.5rem);*/
-    height: 100%;
+    height: calc(100% - 5.5rem);
     width: 18.75rem;
     /*visibility: hidden;*/
     -webkit-transform: translateX(100%);

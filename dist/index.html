@@ -16,214 +16,54 @@
          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
          See the License for the specific language governing permissions and
          limitations under the License.">
-    <meta name="description" content="Watson Conversation Service Sample Application">
-
-    <!--Tab Title-->
-    <title>BSH Mykie With Watson</title>
-
+    <meta name="description" content="Watson Conversation Service Car Dashboard Sample Application">
+    <title>Watson Conversation Service Car Dashboard Sample Application</title>
     <link rel="stylesheet" href="css/main.min.css">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="ct" content="vPWQz9kc-2sDXDdB6m_K5RLm_mwStA0c3cyo">
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
-
-<div class="box">
-
-    <header>
-        <!--Page Title-->
-        <div class="centered-content">
-
-            <h1>BSH Mykie With Watson Demo</h1>
-            
+    <div id="dark-overlay" class="overlay"></div>
+    <div id="clear-overlay" class="overlay"></div>
+    <!--The main car dashboard SVG-->
+    <div id="svg_wrapper">
+        <div id="output-audio" class="audio-on" onclick="TTSModule.toggle()" value="ON"></div>
+        <button id="help" class="tooltip-dialog-btn" onclick="Sidebar.toggle()">What can I ask?</button>
+        <div id="svg_size">
+            <svg id="svg_canvas" viewBox="0 0 1024 704" version="1.1" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
-    </header>
+        <div class="chatUi">
+            <div id="chat-scroll-wrapper"><div id="chat-flow"></div></div>
+            <div id="input-wrapper" class="responsive-columns-wrapper">
+                <div id="input-mic-holder">
+                    <div id="input-mic" class="inactive-mic" onclick="STTModule.micON()"></div>
+                </div>
 
-    <content>
-        <!--Chat area-->
-        <div id="chat-scroll-wrapper" class="content-wrapper">
-            <div id="chat-flow">
-            	<img src="images/restart.png" alt="Restart" class='restart hide'>
+                <label for="user-input" class="input-outline responsive-column">
+                  <input id="user-input" type="text" placeholder="Type something, e.g. “Turn the headlights on”">
+                </label>
             </div>
         </div>
-    </content>
-
-    
-    <!--User input-->
-    <div id="input-wrapper" class="content-wrapper responsive-columns-wrapper">
-        <div id="input-mic-holder" class="input-element">
-
-            <!--Micropphone Settings Button and Drop-down-->
-            <div id="mic-settings-menu" class="dropdown">
-                <a id="mic-settings-button" role="button" data-toggle="dropdown" class="btn btn-default">
-                    <span id="mic-settings-gear" class="glyphicon glyphicon-cog"></span>
-                </a>
-                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-                    <li class="dropdown-submenu">
-                        <a role="button">Auto-Mic: <strong>
-                                <span id="auto-mic-label" data-label-placement></span></strong></a>
-                        <ul id="mic-settings" class="dropdown-menu">
-                            <li><input type="radio" id="always" name="mic-setting" value="always">
-                                <label for="always">Always</label></li>
-                            <li><input type="radio" id="prompt" name="mic-setting" value="prompt">
-                                <label for="prompt">If Prompted</label></li>
-                            <li><input type="radio" id="never" name="mic-setting" value="never">
-                                <label for="never">Never</label></li>
-                        </ul>
-                    </li>
-                    <!--TODO: add "okay, Watson" invocation-->
-                    <!--<li><a>Some other action</a></li>-->
-                </ul>
+        <div id="tooltip-dialog-list"></div>
+        <div id="sidebar">
+            <div class="close-div" onclick="Sidebar.toggle()">
+                <img src="images/close-button.png" class="close" alt="close" />
             </div>
-
-            <!--Microphone Button-->
-            <a id="mic-button">
-                <div id="mic-image" class="inactive-mic" onclick="STTModule.toggle()"></div>
-            </a>
+            <p class="pre-bar">I’m trained on these topics:</p>
+            <ul id="suggestion-list"></ul>
         </div>
-
-        <!--Text Input Field-->
-        <div id="user-input-wrapper" class="input-element">
-            <label for="user-input" class="input-outline responsive-column">
-                
-                <input id="user-input" type="text" placeholder="&lt;- Press and speak or type here.">
-            </label>
-        </div>
-
-        <!--Audio Control Button-->
-        <div id="audio-control-wrapper" class="input-element">
-            <a id="audio-button">
-                <div id="speaker-image" class="audio-off" onclick="TTSModule.toggle()" value="OFF"></div>
-            </a>
-        </div>
-
     </div>
-    
-
-	<!-- The Watson Add card image -->
-    <div id="" class="hide">
-           <div class="c-card" data-cta-pixels="">
-			<div class="c-card__img-holder">
-				<span id='hellmans-ad' class="c-cards__link is-mobile">
-					<img src="https://watsonads.com/wp-content/uploads/2016/12/hellmans-ad.jpg" alt="Hellmann’s" class="c-card__image">
-				</span>
-			</div>
-			<h3 class="c-card__title">Hellmann’s Demo</h3>
-			<p class="c-card__text">
-				Watson and Hellmann’s are putting a new twist on family favorites. What dish will you reinvent?&nbsp;
-				<span id='try-it' class="c-cards__link is-mobile" target="_blank">Try it! </span>
-			</p>
-		</div>
-    </div>
-
-    <!-- The Modal popup window for Watson Add-->
-	<div id="myModal" class="modal">
-	  <!-- Modal content -->
-	  <div class="modal-content">
-	    <div class="modal-header">
-	      <span class="close">&times;</span>
-	      <h3 class='modal-title'>AliveTV - Support</h3>
-	    </div>
-	    
-	    <div class="modal-body">
-	    	 
-			 <img src='images/loading.gif' class='loading' title='Watson is loading all the documents' style='display: none;'></img>
-		     <div id='doc' style='display: none;'>
-				<h3><span class='short-title'>Connecting to the Internet</span>
-					<span class='push-right'>
-				  		<img src='images/thumb-up.png' class='thumb' title='Like it'></img>
-				  		<img src='images/thumb-down.png' class='thumb' title='Dislike it'></img>Samsung E-Manual
-				  	</span>
-				 </h3>
-				 <div>
-				    <p>
-				    	<b>Title:</b> <span class='title'></span><br><br>
-				    	<b>Description:</b> <span class='text'></span>
-				    </p>
-				  </div>
-			  </div>
-			  
-			  <div id='the-weather-channel' style='display: none;'>
-					<img src='images/the-weather-channel.png' class='weather-channel'>
-			  </div>
-			
-	    </div>
-	  </div>
-	</div>
-
-
-    
-
-</div>
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-<script>
-  // Get mic_setting from browser localStorage
-  var mic_setting = localStorage.getItem("mic_setting") || 'prompt';
-
-  $(function() {
-    $("#" + mic_setting).prop('checked', true); // set input element corresponding to the initial mic setting to checked
-    $("#auto-mic-label").html($('label[for=' + mic_setting + ']').html()); // set default label based on initial mic setting
-  });
-
-  // update mic_setting variable on click
-  $('#mic-settings').find('li').on('click', function() {
-    mic_setting = $(this)[0].firstChild.id;
-    localStorage.setItem("mic_setting", mic_setting);
-  });
-
-
-  //Get the modal
-  var modal = document.getElementById('myModal');
-
-  // When the user clicks the button, open the modal
-  $('#try-it, #hellmans-ad').click(function() {
-	  modal.style.display = "block";
-  });
-
-  // When the user clicks on <span> (x), close the modal
-  $('.close')[0].onclick = function() {
-      modal.style.display = "none";
-  };
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function(event) {
-      if (event.target == modal) {
-          modal.style.display = "none";
-      }
-  };
-
-  $('.restart').click(function() {
-	  var restart = $('.restart').detach();
-	  $('#chat-flow').empty().append(restart);
-	  $('#user-input').text('');
-  });
-  
-  $("#user-input").keypress(function(e) {
-	    if (e.which == 13) {
-	    	$('#user-input').blur();
-	    }
-  });
-  
-  document.getElementById('user-input').addEventListener('keyup',function(e){
-	    if (e.which == 13) this.blur();
-  });
-
-</script>
-
-<script src="vendor.min.js"></script>
-<script src="conversation.min.js"></script>
-
-<script src="ibm/watson-speech.min.js"></script>
-<script src="ibm/speech-to-text.js"></script>
-<script src="ibm/text-to-speech.js"></script>
-
-
+    <script>
+        // For cloaking. Done in JS for the case of disabled JS (i.e. even though not much will work, something will be displayed.)
+        document.body.style.visibility = 'hidden';
+    </script>
+    <script src="vendor.min.js"></script>
+    <script src="dashboard.min.js"></script>
+    <script src="ibm/watson-speech.min.js"></script>
+    <script src="ibm/speech-to-text.js"></script>
+    <script src="ibm/text-to-speech.js"></script>
 </body>
 
 </html>
