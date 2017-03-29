@@ -71,8 +71,36 @@ const updateMessage = (input, response, httpresponse) => {
 
         if (response.output.action) {
             //got an action
+            if (response.output.action.stopRecording) {
+                // do the start recording stuff
+                request('https://bsh-image-recognition.mybluemix.net/stop_recording', function (error, videoResponse, body) {
+                    console.log('error:', error); // Print the error if one occurred
+                    console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
+                    //return result
+                    var videoURL = JSON.parse(body).url;
 
-            if (response.output.action === "startRecording") {
+                    // now call the recipe put api
+
+                    /*  request({
+                     url: 'https://bshrecipes.mybluemix.net/recipes/'+recipeId+'/step/'+recipeStep+'/video',
+                     method: "PUT",
+                     body: videoURL
+                     }, function (error, videoResponse, body) {
+                     console.log('error:', error); // Print the error if one occurred
+                     console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
+                     //return result
+                     return {};
+                     });*/
+
+
+
+                    return {};
+                });
+
+
+            }
+
+            if (response.output.action.startRecording) {
                 // do the start recording stuff
 
                 request('https://bsh-image-recognition.mybluemix.net/start_recording', function (error, videoResponse, body) {
@@ -84,37 +112,10 @@ const updateMessage = (input, response, httpresponse) => {
 
 
             }
-            if (response.output.action === "stopRecording") {
-                // do the start recording stuff
-                request('https://bsh-image-recognition.mybluemix.net/stop_recording', function (error, videoResponse, body) {
-                    console.log('error:', error); // Print the error if one occurred
-                    console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
-                    //return result
-                    var videoURL = JSON.parse(body).url;
-
-                    // now call the recipe put api
-
-                  /*  request({
-                        url: 'https://bshrecipes.mybluemix.net/recipes/'+recipeId+'/step/'+recipeStep+'/video',
-                        method: "PUT",
-                        body: videoURL
-                    }, function (error, videoResponse, body) {
-                        console.log('error:', error); // Print the error if one occurred
-                        console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
-                        //return result
-                        return {};
-                    });*/
 
 
 
-                    return {};
-                });
-
-
-            }
-
-
-            if (response.output.action === "recipeSearch" && response.context.recipe) {
+            if (response.output.action.recipeSearch && response.context.recipe) {
                 //recipe search
 
                 //first get user stuff
