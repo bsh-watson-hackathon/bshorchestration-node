@@ -19,16 +19,14 @@ const watson = require('watson-developer-cloud');
 const vcapServices = require('vcap_services');
 var extra_vcap_services={"text-to-speech":[{"credentials":{}}]};
 
-if (process.env.EXTRA_VCAP_SERVICES) {
-    extra_vcap_services = JSON.parse(process.env.EXTRA_VCAP_SERVICES);
-};
+
 
 const credentials = Object.assign({
   username: process.env.TEXT_TO_SPEECH_USERNAME || '<username>',
   password: process.env.TEXT_TO_SPEECH_PASSWORD || '<username>',
   url: process.env.TEXT_TO_SPEECH_URL || 'https://stream.watsonplatform.net/text-to-speech/api',
   version: 'v1'
-}, vcapServices.getCredentials('text_to_speech'),extra_vcap_services["text-to-speech"][0].credentials);
+}, vcapServices.getCredentials('text_to_speech'));
 
 const authorizationService = watson.authorization(credentials);
 

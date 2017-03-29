@@ -49,7 +49,6 @@ const updateMessage = (input, response, httpresponse) => {
                 request('https://bshrecipes.mybluemix.net/recipesmetadata?title=' + response.context.recipe, function (error, reciperesponse, body) {
                     console.log('error:', error); // Print the error if one occurred
                     console.log('statusCode:', reciperesponse && reciperesponse.statusCode); // Print the response status code if a response was received
-                    //console.log('body:', body); // Print the HTML for the Google homepage.
                     //return result
                     var message = {
                         workspace_id: workspace,
@@ -69,8 +68,22 @@ const updateMessage = (input, response, httpresponse) => {
                         }
                     };
 
-                    sendMessage(message, httpresponse, updateMessage);
-                    return {};
+                    //getting recipe details
+
+                    request('https://bshrecipes.mybluemix.net/recipes/' + message.context.recipeInformation.selectedRecipe.id, function (error, recipedetailsresponse, body) {
+                        console.log('error:', error); // Print the error if one occurred
+                        console.log('statusCode:', recipedetailsresponse && recipedetailsresponse.statusCode); // Print the response status code if a response was received
+                        //return result
+
+                        var recipedetails = JSON.parse(body);
+                        message.context.recipeInformation.selectedRecipe.details = recipedetails;
+
+
+                        sendMessage(message, httpresponse, updateMessage);
+                        return {};
+
+
+                    });
 
 
                 });
@@ -125,7 +138,7 @@ module.exports = function (app) {
     app.post('/api/message', (req, res, next) => {
         //  const workspace = process.env.WORKSPACE_ID || '<workspace-id>';
         if (!workspace || workspace === '<workspace-id>') {
-            return res.json({
+            return res.send({
                 output: {
                     text: 'The app has not been configured with a <b>WORKSPACE_ID</b> environment variable. Please refer to the ' +
                     '<a href="https://github.com/watson-developer-cloud/conversation-simple">README</a> ' +

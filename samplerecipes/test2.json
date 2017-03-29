@@ -1,0 +1,155 @@
+{
+  "_id": "5Kz6dAJBqYouAQJgQ",
+  "identifier": "recipe_46792",
+  "summary": null,
+  "tip": null,
+  "fat": 22,
+  "kcal": null,
+  "protein": 6,
+  "servings": "FÃ¼r ca. 20 StÃ¼ck",
+  "steps": [
+    {
+      "text": "Die Zwetschgen waschen, halbieren und entkernen.",
+      "settings": [],
+      "image": null,
+      "video": null,
+      "ingredients": [],
+      "utensils": [],
+      "tip": false,
+      "timer": false
+    },
+    {
+      "text": "Mehl, Zucker, Butter, Salz und Zimt vermischen, so dass Streusel entstehen. Zuletzt die gehackten WalnÃ¼sse untermengen.",
+      "settings": [],
+      "image": null,
+      "video": null,
+      "ingredients": [],
+      "utensils": [],
+      "tip": false,
+      "timer": false
+    },
+    {
+      "text": "FÃ¼r den RÃ¼hrteig Butter und Zucker schaumig rÃ¼hren. Die Eier nach und nach zugeben. Den Quark langsam unter die Schaummasse rÃ¼hren.",
+      "settings": [],
+      "image": null,
+      "video": null,
+      "ingredients": [],
+      "utensils": [],
+      "tip": false,
+      "timer": false
+    },
+    {
+      "text": "Mehl, Salz und Backpulver mischen, sieben und kurz unterrÃ¼hren.",
+      "settings": [],
+      "image": null,
+      "video": null,
+      "ingredients": [],
+      "utensils": [],
+      "tip": false,
+      "timer": false
+    },
+    {
+      "text": "Die Universalpfanne mit Butter einfetten und den Teig gleichmÃ¤ÃŸig darauf verteilen.",
+      "settings": [],
+      "image": null,
+      "video": null,
+      "ingredients": [],
+      "utensils": [],
+      "tip": false,
+      "timer": false
+    },
+    {
+      "text": "Mit den Zwetschgen belegen, die Streusel darÃ¼ber verteilen und den Kuchen wie angegeben backen.",
+      "settings": [
+        {
+          "hc_command_string": "{\"commandDescriptionV1\":{\"program\":{\"featureKey\":\"Cooking.Oven.Program.MicroCombiModes.TopBottomHeating\",\"options\":[{\"featureKey\":\"Cooking.Oven.Option.SetpointTemperature\",\"value\":180},{\"featureKey\":\"Cooking.Oven.Option.MicrowavePower\",\"value\":\"Cooking.Oven.EnumType.MicrowavePower.180Watt\"},{\"featureKey\":\"BSH.Common.Option.Duration\",\"value\":2100}]}}}",
+          "is_alternative": false,
+          "hc_requirements": "[{\"featureKey\":\"Cooking.Oven.Status.MeatprobePlugged\",\"value\":false}]",
+          "target_appliance": "Oven",
+          "text": "Oberâ€‘/Unterhitze\n180 Â°C\n180 Watt\n35-40 Minuten"
+        },
+        {
+          "hc_command_string": "{\"commandDescriptionV1\":{\"program\":{\"featureKey\":\"Cooking.Oven.Program.HeatingMode.TopBottomHeating\",\"options\":[{\"featureKey\":\"Cooking.Oven.Option.SetpointTemperature\",\"value\":180},{\"featureKey\":\"BSH.Common.Option.Duration\",\"value\":3000}]}}}",
+          "is_alternative": true,
+          "hc_requirements": "[{\"featureKey\":\"Cooking.Oven.Status.MeatprobePlugged\",\"value\":false}]",
+          "target_appliance": "Oven",
+          "text": "Oberâ€‘/Unterhitze\n180 Â°C\n50-60 Minuten"
+        }
+      ],
+      "image": null,
+      "video": null,
+      "ingredients": [],
+      "utensils": [],
+      "tip": false,
+      "timer": false
+    }
+  ],
+  "ingredients_lists": [
+    {
+      "name": "Belag:",
+      "ingredients": [
+        "ca. 1,5 kg frische Zwetschgen"
+      ]
+    },
+    {
+      "name": "Streusel:",
+      "ingredients": [
+        "250 g Mehl",
+        "150 g Zucker",
+        "180 g Butter, kalt",
+        "1 Prise Salz",
+        "1 TL Zimt",
+        "50 g Walnusskerne, grob gehackt"
+      ]
+    },
+    {
+      "name": "RÃ¼hrteig:",
+      "ingredients": [
+        "200 g Butter, weich",
+        "250 g Zucker",
+        "5 Eier",
+        "100 g Quark",
+        "350 g Mehl",
+        "1 Prise Salz",
+        "1 PÃ¤ckchen Backpulver"
+      ]
+    },
+    {
+      "name": "AuÃŸerdem:",
+      "ingredients": [
+        "Butter fÃ¼r das Blech"
+      ]
+    }
+  ],
+  "locale": "de",
+  "carbohydrate": 49,
+  "totalTime": 0,
+  "preparationTime": 0,
+  "cookingTime": 0,
+  "rating": 0,
+  "difficulty": 0,
+  "utensils": [],
+  "comments": [
+    {
+      "text": "I really like this recipe. The instructions were clear and the result was awesome!",
+      "date": "2016-06-23T09:07:30.163Z",
+      "profileId": "id111",
+      "authorName": "Daisy Dinner",
+      "authorImage": "https://randomuser.me/api/portraits/women/43.jpg"
+    },
+    {
+      "text": "So delicious... Just like the secret recipe of my grandma.",
+      "date": "2016-05-16T10:07:30.163Z",
+      "profileId": "id222",
+      "authorName": "Winfried Wonder",
+      "authorImage": "https://randomuser.me/api/portraits/men/4.jpg"
+    },
+    {
+      "text": "My husband loved this meal! I have served it with parmesan cheese which made it even more tasty.",
+      "date": "2016-06-12T11:17:30.163Z",
+      "profileId": "id333",
+      "authorName": "Lina Lunch",
+      "authorImage": "https://randomuser.me/api/portraits/women/48.jpg"
+    }
+  ]
+}
