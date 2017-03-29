@@ -172,9 +172,6 @@ var Conversation = (function() {
           if (handsupdate["hands_update"]){
               var message = {
                   "input":{
-                      "text":""
-                  },
-                  "context":{
                       "handsupdate":true
                   }
               }
@@ -182,9 +179,6 @@ var Conversation = (function() {
           }else if (!handsupdate["hands_update"]){
               var message = {
                   "input":{
-                      "text":""
-                  },
-                  "context":{
                       "handsupdate":false
                   }
               }
