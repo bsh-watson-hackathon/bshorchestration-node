@@ -16,6 +16,33 @@
 
 const watson = require('watson-developer-cloud'); // watson sdk
 var request = require('request');
+var vcapServices = require('vcap_services');
+
+
+//The app owner may optionally configure a cloudand db to track user input.
+//This cloudand db is not required, the app will operate without it.
+//If logging is enabled the app must also enable basic auth to secure logging
+//endpoints
+var cloudantCredentials = vcapServices.getCredentials('cloudantNoSQLDB-service');
+var cloudantUrl = null;
+if (cloudantCredentials) {
+    cloudantUrl = cloudantCredentials.url;
+}
+cloudantUrl = cloudantUrl || process.env.CLOUDANT_URL; // || '<cloudant_url>';
+
+var cloudant = require('cloudant')(process.env.CLOUDANT_URL);
+var dbname = 'userdb';
+var userdb = null;
+
+try{
+    userdb = cloudant.db.create(dbname);
+    if (userdb != null){
+        userdb = cloudant.db.use(dbname);
+    }
+}catch(e){
+    userdb = cloudant.db.use(dbname);
+}
+// var logs = null;
 
 // Create the service wrapper
 const conversation = watson.conversation({
@@ -35,6 +62,7 @@ const workspace = process.env.WORKSPACE_ID || '<workspace-id>';
  * @param  {Object} response The response from the Conversation service
  * @return {Object}          The response with the updated message
  */
+
 const updateMessage = (input, response, httpresponse) => {
     console.log("got from conversation: " + JSON.stringify(response, null, 2));
     if (!response.output) {
@@ -43,50 +71,73 @@ const updateMessage = (input, response, httpresponse) => {
 
         if (response.output.action) {
             //got an action
+
             if (response.output.action = "recipeSearch" && response.context.recipe) {
 
-                // call recipe API here
-                request('https://bshrecipes.mybluemix.net/recipesmetadata?title=' + response.context.recipe, function (error, reciperesponse, body) {
-                    console.log('error:', error); // Print the error if one occurred
-                    console.log('statusCode:', reciperesponse && reciperesponse.statusCode); // Print the response status code if a response was received
-                    //return result
-                    var message = {
-                        workspace_id: workspace,
-                        input: {},
-                        context: response.context,
+                //first get user stuff
+                var message = {
+                    workspace_id: workspace,
+                    input: {},
+                    context: response.context,
 
-                    }
-                    var recipes = JSON.parse(body);
-                    message.context.recipeInformation = {
-                        foundNumber: recipes.length,
-                        excludedNumber: 1,
-                        selectedRecipe: {
+                }
 
-                            "id": recipes[0].identifier,
-                            "name": recipes[0].data[0].title
+
+                    var user = response.context.user;
+                    //user = 'roland';
+                    console.log("***user***" + user);
+                    userdb.find({selector: {name: user}}, function (er, result) {
+                        if (er) {
+                            throw er;
+                        }
+                        if (result.docs.length > 0) {
+                            console.log('Found user in the database.');
+                            message.context.user = result.docs[0];
 
                         }
-                    };
 
-                    //getting recipe details
+                        request('https://bshrecipes.mybluemix.net/recipesmetadata?title=' + response.context.recipe, function (error, reciperesponse, body) {
+                            console.log('error:', error); // Print the error if one occurred
+                            console.log('statusCode:', reciperesponse && reciperesponse.statusCode); // Print the response status code if a response was received
+                            //return result
 
-                    request('https://bshrecipes.mybluemix.net/recipes/' + message.context.recipeInformation.selectedRecipe.id, function (error, recipedetailsresponse, body) {
-                        console.log('error:', error); // Print the error if one occurred
-                        console.log('statusCode:', recipedetailsresponse && recipedetailsresponse.statusCode); // Print the response status code if a response was received
-                        //return result
+                            var recipes = JSON.parse(body);
+                            message.context.recipeInformation = {
+                                foundNumber: recipes.length,
+                                excludedNumber: 1,
+                                selectedRecipe: {
 
-                        var recipedetails = JSON.parse(body);
-                        message.context.recipeInformation.selectedRecipe.details = recipedetails;
+                                    "id": recipes[0].identifier,
+                                    "name": recipes[0].data[0].title
+
+                                }
+                            };
+
+                            //getting recipe details
+
+                            request('https://bshrecipes.mybluemix.net/recipes/' + message.context.recipeInformation.selectedRecipe.id, function (error, recipedetailsresponse, body) {
+                                console.log('error:', error); // Print the error if one occurred
+                                console.log('statusCode:', recipedetailsresponse && recipedetailsresponse.statusCode); // Print the response status code if a response was received
+                                //return result
+
+                                var recipedetails = JSON.parse(body);
+                                message.context.recipeInformation.selectedRecipe.details = recipedetails;
 
 
-                        sendMessage(message, httpresponse, updateMessage);
-                        return {};
+                                sendMessage(message, httpresponse, updateMessage);
+                                return {};
+
+
+                            });
+
+
+                        });
 
 
                     });
 
 
-                });
+
 
 
             } else {
