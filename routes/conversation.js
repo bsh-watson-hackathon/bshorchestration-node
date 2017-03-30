@@ -139,8 +139,10 @@ const updateMessage = (input, response, httpresponse) => {
             if (response.output.action.searchIngredient) {
                 // do the start recording stuff
                 var recipeId = response.context.recipeInformation.selectedRecipe.id;
+                var ingredient = response.output.action.parameter.ingredient;
 
-                request('https://bshrecipes.mybluemix.net/recipes/' + recipeId, function (error, ingredientResponse, body) {
+
+                request('https://bshrecipes.mybluemix.net/recipes/' + recipeId+'?ingredient='+ingredient, function (error, ingredientResponse, body) {
                     console.log('error:', error); // Print the error if one occurred
                     console.log('statusCode:', ingredientResponse && ingredientResponse.statusCode); // Print the response status code if a response was received
                     var message = {
@@ -153,6 +155,7 @@ const updateMessage = (input, response, httpresponse) => {
 
                     }
                     sendMessage(message, httpresponse, updateMessage);
+                    return {};
 
 
                 });

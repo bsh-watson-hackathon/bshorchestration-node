@@ -21,7 +21,7 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "^Conversation$" }] */
 /* global Api: true, Common: true */
 
-
+var handfotointerval;
 var Conversation = (function() {
   'use strict';
   var ids = {
@@ -250,8 +250,21 @@ var Conversation = (function() {
              stepsHTML+='<p>'+newPayload.context.recipeInformation.selectedRecipe.details.steps[currentStep].text+'</p>'
          }
          stepsHTML+='<h2>Video Capture</h2>';
-         stepsHTML+='<img height="200px" id="handphoto" src=\"http://serwer16667.lh.pl/ibm/handphoto.jpg\"></img>';
+         stepsHTML+='<img height=\"200px\" id=\"handphoto\" src=\"http://serwer16667.lh.pl/ibm/handphoto.jpg\"></img>';
          ingredients.innerHTML=stepsHTML;
+         if (!handfotointerval) {
+             handfotointerval = setInterval(function () {
+
+                 var myImageElement = document.getElementById('handphoto');
+                 if (!myImageElement){
+                     clearInterval(handfotointerval);
+                 }else {
+                     myImageElement.src = 'http://serwer16667.lh.pl/ibm/handphoto.jpg?rand=' + Math.random();
+                 }
+             }, 1000);
+         }else {
+
+         }
         // alert(ingredients.innerHTML);
 
      }
