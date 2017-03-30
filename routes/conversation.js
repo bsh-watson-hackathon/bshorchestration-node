@@ -100,8 +100,11 @@ const updateMessage = (input, response, httpresponse) => {
 
                     // now call the recipe put api
 
+                    var videoEndpoint = 'https://bshrecipes.mybluemix.net/recipesdetail/' + recipeId + '/step/' + recipeStep + '/video';
+                            console.log("videoEndpoint:"+videoEndpoint);
+
                     request({
-                        url: 'https://bshrecipes.mybluemix.net/recipes/' + recipeId + '/step/' + recipeStep + '/video',
+                        url: 'https://bshrecipes.mybluemix.net/recipesdetail/' + recipeId + '/step/' + recipeStep + '/video',
                         headers:{
                             'content-type':'application/json'
                         },
@@ -127,6 +130,30 @@ const updateMessage = (input, response, httpresponse) => {
                     console.log('error:', error); // Print the error if one occurred
                     console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
                     //return result
+
+                });
+
+
+            }
+
+            if (response.output.action.searchIngredient) {
+                // do the start recording stuff
+                var recipeId = response.context.recipeInformation.selectedRecipe.id;
+
+                request('https://bshrecipes.mybluemix.net/recipes/' + recipeId, function (error, ingredientResponse, body) {
+                    console.log('error:', error); // Print the error if one occurred
+                    console.log('statusCode:', ingredientResponse && ingredientResponse.statusCode); // Print the response status code if a response was received
+                    var message = {
+                        workspace_id: workspace,
+                        input: {
+                            "ingredientSearchResult":ingredientResponse
+                        },
+                        context: response.context,
+
+
+                    }
+                    sendMessage(message, httpresponse, updateMessage);
+
 
                 });
 
@@ -192,7 +219,7 @@ const updateMessage = (input, response, httpresponse) => {
 
                             //getting recipe details
 
-                            request('https://bshrecipes.mybluemix.net/recipes/' + message.context.recipeInformation.selectedRecipe.id, function (error, recipedetailsresponse, body) {
+                            request('https://bshrecipes.mybluemix.net/recipesdetail/' + message.context.recipeInformation.selectedRecipe.id, function (error, recipedetailsresponse, body) {
                                 console.log('error:', error); // Print the error if one occurred
                                 console.log('statusCode:', recipedetailsresponse && recipedetailsresponse.statusCode); // Print the response status code if a response was received
                                 //return result
@@ -206,7 +233,7 @@ const updateMessage = (input, response, httpresponse) => {
                                             var setting = recipedetails.steps[i].settings[j];
                                             if (setting.is_alternative){
                                                 recipedetails.steps[i].program=setting.text.replace("\n"," ");
-                                                recipdetails.steps[i].target_appliance=setting.target_appliance;
+                                                recipedetails.steps[i].target_appliance=setting.target_appliance;
                                             }
                                         }
                                     }
