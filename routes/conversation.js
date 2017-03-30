@@ -95,27 +95,30 @@ const updateMessage = (input, response, httpresponse) => {
                     }
                     console.log("got videoURL:" + videoURL);
 
-                    var recipeId = response.context.recipeInformation.selectedRecipe.id;
-                    var recipeStep = response.context["current_step"] -1;
+                    if (response.context.recipeInformation) {
 
-                    // now call the recipe put api
+                        var recipeId = response.context.recipeInformation.selectedRecipe.id;
+                        var recipeStep = response.context["current_step"] - 1;
 
-                    var videoEndpoint = 'https://recipe-api.mybluemix.net/recipesdetail/' + recipeId + '/steps/' + recipeStep + '/video';
-                            console.log("videoEndpoint:"+videoEndpoint);
+                        // now call the recipe put api
 
-                    request({
-                        url: videoEndpoint,
-                        headers:{
-                            'content-type':'application/json'
-                        },
-                        method: "PUT",
-                        body: videoJSON,
-                        json: true
-                    }, function (error, videoResponse, body) {
-                        console.log('error putting recipe video:', error); // Print the error if one occurred
-                        console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
+                        var videoEndpoint = 'https://recipe-api.mybluemix.net/recipesdetail/' + recipeId + '/steps/' + recipeStep + '/video';
+                        console.log("videoEndpoint:" + videoEndpoint);
 
-                    });
+                        request({
+                            url: videoEndpoint,
+                            headers: {
+                                'content-type': 'application/json'
+                            },
+                            method: "PUT",
+                            body: videoJSON,
+                            json: true
+                        }, function (error, videoResponse, body) {
+                            console.log('error putting recipe video:', error); // Print the error if one occurred
+                            console.log('statusCode:', videoResponse && videoResponse.statusCode); // Print the response status code if a response was received
+
+                        });
+                    }
 
 
                 });

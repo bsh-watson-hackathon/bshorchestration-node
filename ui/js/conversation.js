@@ -233,7 +233,7 @@ var Conversation = (function() {
      console.log(JSON.stringify(newPayload,null,2));
         var ingredients = document.getElementById('ingredients');
        // alert(newPayload.context.current_step);
-     if (newPayload.context && newPayload.context.current_step!=undefined){
+     if (newPayload.context && newPayload.context.state==="cooking"){
         // alert("hello");
 
          var stepsHTML;
@@ -264,7 +264,7 @@ var Conversation = (function() {
 
      }
 
-     else if (newPayload.context && newPayload.context.recipeInformation && newPayload.context.recipeInformation.selectedRecipe){
+     else if (newPayload.context && newPayload.context.state==="shopping"){
 
       // alert(newPayload.context.recipeInformation.selectedRecipe);
          var ingredientsHTML;
@@ -313,6 +313,8 @@ var Conversation = (function() {
          ingredients.innerHTML=ingredientsHTML;
 
 
+     }else{
+         ingredients.innerHTML="";
      }
 
 
