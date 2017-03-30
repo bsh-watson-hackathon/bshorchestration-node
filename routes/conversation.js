@@ -145,7 +145,7 @@ const updateMessage = (input, response, httpresponse) => {
                 var ingredient = response.output.action.parameter.ingredient;
 
 
-                request('https://bshrecipes.mybluemix.net/recipesdetail/' + recipeId+'/ingredients_list?amountOfIngredient='+ingredient, function (error, ingredientResponse, body) {
+                request('https://recipe-api.mybluemix.net/recipesdetail/' + recipeId+'/ingredients_list?amountOfIngredient='+ingredient, function (error, ingredientResponse, body) {
                     console.log('error:', error); // Print the error if one occurred
                     console.log('statusCode:', ingredientResponse && ingredientResponse.statusCode); // Print the response status code if a response was received
                     var ingredientResponseString="";
