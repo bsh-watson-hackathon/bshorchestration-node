@@ -100,7 +100,7 @@ const updateMessage = (input, response, httpresponse) => {
 
                     // now call the recipe put api
 
-                    var videoEndpoint = 'https://bshrecipes.mybluemix.net/recipesdetail/' + recipeId + '/steps/' + recipeStep + '/video';
+                    var videoEndpoint = 'https://recipe-api.mybluemix.net/recipesdetail/' + recipeId + '/steps/' + recipeStep + '/video';
                             console.log("videoEndpoint:"+videoEndpoint);
 
                     request({
@@ -142,13 +142,22 @@ const updateMessage = (input, response, httpresponse) => {
                 var ingredient = response.output.action.parameter.ingredient;
 
 
-                request('https://bshrecipes.mybluemix.net/recipes/' + recipeId+'?ingredient='+ingredient, function (error, ingredientResponse, body) {
+                request('https://bshrecipes.mybluemix.net/recipesdetail/' + recipeId+'/ingredients_list?amountOfIngredient='+ingredient, function (error, ingredientResponse, body) {
                     console.log('error:', error); // Print the error if one occurred
                     console.log('statusCode:', ingredientResponse && ingredientResponse.statusCode); // Print the response status code if a response was received
+                    var ingredientResponseString="";
+                   // console.log(ingredientResponse);
+
+                    var ingredientResponse = JSON.parse(ingredientResponse.body);
+
+                    for (var i=0; i<ingredientResponse.length;i++){
+                        ingredientResponseString+="For the "+ingredientResponse[i].name+" you need: "+ingredientResponse[i].value+". ";
+                    }
+
                     var message = {
                         workspace_id: workspace,
                         input: {
-                            "ingredientSearchResult":ingredientResponse
+                            "ingredientSearchResult":ingredientResponseString
                         },
                         context: response.context,
 
@@ -203,26 +212,26 @@ const updateMessage = (input, response, httpresponse) => {
                         }
 
 
-                        request('https://bshrecipes.mybluemix.net/recipesmetadata?title=' + response.context.recipe, function (error, reciperesponse, body) {
+                        request('https://recipe-api.mybluemix.net/recipesmetadata?title=' + response.context.recipe+"&userid=roland", function (error, reciperesponse, body) {
                             console.log('recipe md error:', error); // Print the error if one occurred
                             console.log('recipe md statusCode:', reciperesponse && reciperesponse.statusCode); // Print the response status code if a response was received
                             //return result
 
                             var recipes = JSON.parse(body);
                             message.context.recipeInformation = {
-                                foundNumber: recipes.length,
-                                excludedNumber: 1,
+                                foundNumber: recipes.foundRecipes,
+                                excludedNumber: recipes.excludedRecipes,
                                 selectedRecipe: {
 
-                                    "id": recipes[0].identifier,
-                                    "name": recipes[0].data[0].title
+                                    "id": recipes.matchingRecipes[0].identifier,
+                                    "name": recipes.matchingRecipes[0].data[0].title
 
                                 }
                             };
 
                             //getting recipe details
 
-                            request('https://bshrecipes.mybluemix.net/recipesdetail/' + message.context.recipeInformation.selectedRecipe.id, function (error, recipedetailsresponse, body) {
+                            request('https://recipe-api.mybluemix.net/recipesdetail/' + message.context.recipeInformation.selectedRecipe.id, function (error, recipedetailsresponse, body) {
                                 console.log('recipe dt error:', error); // Print the error if one occurred
                                 console.log('recipe dt statusCode:', recipedetailsresponse && recipedetailsresponse.statusCode); // Print the response status code if a response was received
                                 //return result
