@@ -198,6 +198,20 @@ const updateMessage = (input, response, httpresponse) => {
                                 //return result
 
                                 var recipedetails = JSON.parse(body);
+                                // do some magic for the home connect steps
+
+                                for (var i = 0; i< recipedetails.steps.length; i++){
+                                    if (recipedetails.steps[i].settings.length>0){
+                                        for (var j=0; j<recipedetails.steps[i].settings.length;j++){
+                                            var setting = recipedetails.steps[i].settings[j];
+                                            if (setting.is_alternative){
+                                                recipedetails.steps[i].program=setting.text.replace("\n"," ");
+                                                recipdetails.steps[i].target_appliance=setting.target_appliance;
+                                            }
+                                        }
+                                    }
+                                }
+
                                 message.context.recipeInformation.selectedRecipe.details = recipedetails;
 
 
@@ -256,15 +270,17 @@ const doNLU = (text, result, payload, callback) => {
         else
             console.log("NLU Result" + JSON.stringify(response, null, 2));
         //convert entities to conversation format
+
         if (response && response.entities) {
             var entities = response.entities.map(function (item) {
-                var resultEntity = {};
-                resultEntity.entity = item.type;
-                resultEntity.value = item.text;
-                resultEntity.location = [0, 0];
-                return resultEntity;
+                if (item.type === "food") {
+                    return item.text;
+                } else {
+                    return;
+                }
+
             })
-            payload.nluentities = entities;
+            payload.input.nlufoodentities = entities;
         }
         sendMessage(payload, result, callback);
 
@@ -312,6 +328,7 @@ module.exports = function (app) {
             input: req.body.input || {}
         };
         console.log("message:" + JSON.stringify(payload));
+        payload.input.nlufoodentities = [];
         if (!payload.input.text || payload.input.text.length <= 0) {
             sendMessage(payload, res, updateMessage);
         } else {
