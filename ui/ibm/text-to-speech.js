@@ -80,7 +80,7 @@ var TTSModule = (function() {
               voice: 'en-US_AllisonVoice', // Default Watson voice
               autoPlay: true, // Automatically plays audio
 	      token : token,
-              customization_id: 'df91158a-32bc-41b4-b312-4eb5214ceb7e' // custom model fixes Mykie pronunciation
+              customization_id: '153bf5cf-e813-4904-8b56-183e5470990a' // custom model fixes Mykie pronunciation, connected to user ID 12c175c8-7a66-40a9-be86-45f99ca7f758
             });
             // When the audio stops playing
             audio.onended = function() {

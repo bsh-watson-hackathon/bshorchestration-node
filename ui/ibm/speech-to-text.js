@@ -74,7 +74,7 @@ var STTModule = (function() {
           inactivity_timeout: 5,              // Number of seconds to wait before closing input stream
           format: false,                      // Inhibits errors
           keepMicrophone: true,               // Avoids repeated permissions prompts in FireFox
-          customization_id: '228791e0-1487-11e7-94ad-3b2269260fbc'	// 
+          customization_id: '813f3460-1566-11e7-85ff-a5ff8b892e09'	// ID connected to user 527f71a8-9f2b-4fbb-a786-e19187a5a0fb
         });
 
 	
