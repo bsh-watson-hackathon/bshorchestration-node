@@ -236,11 +236,29 @@ var Conversation = (function() {
       var messageDiv = buildMessageDomElement(newPayload, isUser);
 
      console.log(JSON.stringify(newPayload,null,2));
+        var ingredients = document.getElementById('ingredients');
+       // alert(newPayload.context.current_step);
+     if (newPayload.context && newPayload.context.current_step!=undefined){
+        // alert("hello");
 
-     if (newPayload.context && newPayload.context.recipeInformation && newPayload.context.recipeInformation.selectedRecipe){
+         var stepsHTML;
+         var currentStep = newPayload.context.current_step;
+         stepsHTML='<h2>Step:'+currentStep+'</h2>';
+         if (newPayload.context.recipeInformation.selectedRecipe.details.steps[currentStep].video){
+             stepsHTML+='<video width=\"320\" height=\"240\" controls> <source src=\"'+newPayload.context.recipeInformation.selectedRecipe.details.steps[currentStep].video+'\" type=\"video/mp4\"></video>';
+         }else{
+             stepsHTML+='<p>'+newPayload.context.recipeInformation.selectedRecipe.details.steps[currentStep].text+'</p>'
+         }
+         stepsHTML+='<h2>Video Capture</h2>';
+         stepsHTML+='<img height="200px" id="handphoto" src=\"http://serwer16667.lh.pl/ibm/handphoto.jpg\"></img>';
+         ingredients.innerHTML=stepsHTML;
+        // alert(ingredients.innerHTML);
+
+     }
+
+     else if (newPayload.context && newPayload.context.recipeInformation && newPayload.context.recipeInformation.selectedRecipe){
 
       // alert(newPayload.context.recipeInformation.selectedRecipe);
-         var ingredients = document.getElementById('ingredients');
          var ingredientsHTML;
          ingredientsHTML='<h2>Ingredients for '+newPayload.context.recipeInformation.selectedRecipe.name+'</h2><ul>'
          for (var i=0;i<newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists.length;i++){

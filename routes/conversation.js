@@ -96,15 +96,15 @@ const updateMessage = (input, response, httpresponse) => {
                     console.log("got videoURL:" + videoURL);
 
                     var recipeId = response.context.recipeInformation.selectedRecipe.id;
-                    var recipeStep = response.context["current_step"];
+                    var recipeStep = response.context["current_step"] -1;
 
                     // now call the recipe put api
 
-                    var videoEndpoint = 'https://bshrecipes.mybluemix.net/recipesdetail/' + recipeId + '/step/' + recipeStep + '/video';
+                    var videoEndpoint = 'https://bshrecipes.mybluemix.net/recipesdetail/' + recipeId + '/steps/' + recipeStep + '/video';
                             console.log("videoEndpoint:"+videoEndpoint);
 
                     request({
-                        url: 'https://bshrecipes.mybluemix.net/recipesdetail/' + recipeId + '/step/' + recipeStep + '/video',
+                        url: videoEndpoint,
                         headers:{
                             'content-type':'application/json'
                         },
