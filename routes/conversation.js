@@ -194,8 +194,8 @@ const updateMessage = (input, response, httpresponse) => {
                     // now get fridge content
 
                     request('https://bsh-image-recognition.mybluemix.net/fridge_contents', function (error, fridgeresponse, body) {
-                        console.log('error:', error); // Print the error if one occurred
-                        console.log('statusCode:', fridgeresponse && fridgeresponse.statusCode); // Print the response status code if a response was received
+                        console.log('fridge error:', error); // Print the error if one occurred
+                        console.log('fridge statusCode:', fridgeresponse && fridgeresponse.statusCode); // Print the response status code if a response was received
                         //return result
                         if (fridgeresponse.statusCode === 200) {
                             var fridgeContent = JSON.parse(body);
@@ -204,8 +204,8 @@ const updateMessage = (input, response, httpresponse) => {
 
 
                         request('https://bshrecipes.mybluemix.net/recipesmetadata?title=' + response.context.recipe, function (error, reciperesponse, body) {
-                            console.log('error:', error); // Print the error if one occurred
-                            console.log('statusCode:', reciperesponse && reciperesponse.statusCode); // Print the response status code if a response was received
+                            console.log('recipe md error:', error); // Print the error if one occurred
+                            console.log('recipe md statusCode:', reciperesponse && reciperesponse.statusCode); // Print the response status code if a response was received
                             //return result
 
                             var recipes = JSON.parse(body);
@@ -223,26 +223,27 @@ const updateMessage = (input, response, httpresponse) => {
                             //getting recipe details
 
                             request('https://bshrecipes.mybluemix.net/recipesdetail/' + message.context.recipeInformation.selectedRecipe.id, function (error, recipedetailsresponse, body) {
-                                console.log('error:', error); // Print the error if one occurred
-                                console.log('statusCode:', recipedetailsresponse && recipedetailsresponse.statusCode); // Print the response status code if a response was received
+                                console.log('recipe dt error:', error); // Print the error if one occurred
+                                console.log('recipe dt statusCode:', recipedetailsresponse && recipedetailsresponse.statusCode); // Print the response status code if a response was received
                                 //return result
+                                if (recipedetailsresponse.statusCode == 200) {
+                                    var recipedetails = JSON.parse(body);
+                                    // do some magic for the home connect steps
 
-                                var recipedetails = JSON.parse(body);
-                                // do some magic for the home connect steps
-
-                                for (var i = 0; i< recipedetails.steps.length; i++){
-                                    if (recipedetails.steps[i].settings.length>0){
-                                        for (var j=0; j<recipedetails.steps[i].settings.length;j++){
-                                            var setting = recipedetails.steps[i].settings[j];
-                                            if (setting.is_alternative){
-                                                recipedetails.steps[i].program=setting.text.replace("\n"," ");
-                                                recipedetails.steps[i].target_appliance=setting.target_appliance;
+                                    for (var i = 0; i < recipedetails.steps.length; i++) {
+                                        if (recipedetails.steps[i].settings.length > 0) {
+                                            for (var j = 0; j < recipedetails.steps[i].settings.length; j++) {
+                                                var setting = recipedetails.steps[i].settings[j];
+                                                if (setting.is_alternative) {
+                                                    recipedetails.steps[i].program = setting.text.replace("\n", " ");
+                                                    recipedetails.steps[i].target_appliance = setting.target_appliance;
+                                                }
                                             }
                                         }
                                     }
-                                }
 
-                                message.context.recipeInformation.selectedRecipe.details = recipedetails;
+                                    message.context.recipeInformation.selectedRecipe.details = recipedetails;
+                                }
 
 
                                 sendMessage(message, httpresponse, updateMessage);

@@ -169,19 +169,14 @@ var Conversation = (function() {
       connection.onmessage = function (e) {
           console.log('Server: ' + e.data);
           var handsupdate = JSON.parse(e.data);
-          if (handsupdate["hands_update"]){
+          if (handsupdate.command === "hands_update"){
+
               var message = {
                   "input":{
-                      "handsupdate":true
+                      "handsupdate":handsupdate.value
                   }
               }
-              Api.postConversation(message);
-          }else if (!handsupdate["hands_update"]){
-              var message = {
-                  "input":{
-                      "handsupdate":false
-                  }
-              }
+              console.log("hu"+JSON.stringify(message));
               Api.postConversation(message);
           }
       };
@@ -245,7 +240,7 @@ var Conversation = (function() {
          var currentStep = newPayload.context.current_step;
          stepsHTML='<h2>Step:'+currentStep+'</h2>';
          if (newPayload.context.recipeInformation.selectedRecipe.details.steps[currentStep].video){
-             stepsHTML+='<video width=\"320\" height=\"240\" controls> <source src=\"'+newPayload.context.recipeInformation.selectedRecipe.details.steps[currentStep].video+'\" type=\"video/mp4\"></video>';
+             stepsHTML+='<video width=\"320\" height=\"240\" controls autoplay> <source src=\"'+newPayload.context.recipeInformation.selectedRecipe.details.steps[currentStep].video+'\" type=\"video/mp4\"></video>';
          }else{
              stepsHTML+='<p>'+newPayload.context.recipeInformation.selectedRecipe.details.steps[currentStep].text+'</p>'
          }
@@ -274,33 +269,35 @@ var Conversation = (function() {
       // alert(newPayload.context.recipeInformation.selectedRecipe);
          var ingredientsHTML;
          ingredientsHTML='<h2>Ingredients for '+newPayload.context.recipeInformation.selectedRecipe.name+'</h2><ul>'
-         for (var i=0;i<newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists.length;i++){
-             ingredientsHTML+='<li>'+newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].name+"<ul>";
-           for (var j=0;j<newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].ingredients.length;j++){
+         if (newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists) {
+             for (var i = 0; i < newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists.length; i++) {
+                 ingredientsHTML += '<li>' + newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].name + "<ul>";
+                 for (var j = 0; j < newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].ingredients.length; j++) {
 
-               var ingredient = newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].ingredients[j];
-               var fridgeItems ={};
-               if (newPayload.context.fridgeContent ){
-                   fridgeItems=newPayload.context.fridgeContent;
-               }
+                     var ingredient = newPayload.context.recipeInformation.selectedRecipe.details.ingredients_lists[i].ingredients[j];
+                     var fridgeItems = {};
+                     if (newPayload.context.fridgeContent) {
+                         fridgeItems = newPayload.context.fridgeContent;
+                     }
 
-               var inFridge=false
-               for (var item in fridgeItems){
-                   if (ingredient.toLowerCase().indexOf(item)>-1){
-                     inFridge = true;
-                   }
+                     var inFridge = false
+                     for (var item in fridgeItems) {
+                         if (ingredient.toLowerCase().indexOf(item) > -1) {
+                             inFridge = true;
+                         }
 
-               }
+                     }
 
-               if (inFridge){
-                   ingredient+=" (in fridge)";
-               }else {
-                   ingredient+=" (on shopping list)";
-               }
-               ingredientsHTML+='<li>'+ingredient+'</li>';
-           }
+                     if (inFridge) {
+                         ingredient += " (in fridge)";
+                     } else {
+                         ingredient += " (on shopping list)";
+                     }
+                     ingredientsHTML += '<li>' + ingredient + '</li>';
+                 }
 
-             ingredientsHTML+='</ul></li>';
+                 ingredientsHTML += '</ul></li>';
+             }
          }
          ingredientsHTML+='</ul>'
          var fridgeHTML="<h2>Fridge Content:</h2><ul>"
