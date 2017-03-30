@@ -73,9 +73,11 @@ var STTModule = (function() {
           outputElement: '#user-input',       // CSS selector or DOM Element
           inactivity_timeout: 5,              // Number of seconds to wait before closing input stream
           format: false,                      // Inhibits errors
-          keepMicrophone: true                // Avoids repeated permissions prompts in FireFox
+          keepMicrophone: true,               // Avoids repeated permissions prompts in FireFox
+          customization_id: '228791e0-1487-11e7-94ad-3b2269260fbc'	// 
         });
 
+	
         stream.promise()                                // Once all data has been processed...
           .then(function(data) {                        // ...put all of it into a single array
             mic.setAttribute('class', 'inactive-mic');  // Reset our microphone button to visually indicate we aren't listening to user anymore
