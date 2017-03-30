@@ -80,7 +80,6 @@ var STTModule = (function() {
 	
         stream.promise()                                // Once all data has been processed...
           .then(function(data) {                        // ...put all of it into a single array
-            mic.setAttribute('class', 'inactive-mic');  // Reset our microphone button to visually indicate we aren't listening to user anymore
             recording = false;                          // We aren't recording anymore
             if (data.length !== 0) {                    // If data is not empty (the user said something)
               var dialogue = data.pop();                // Get the last data variable from the data array, which will be the finalized Speech-To-Text transcript
