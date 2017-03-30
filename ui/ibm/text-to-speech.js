@@ -79,7 +79,8 @@ var TTSModule = (function() {
               text: payload.text, // Output text/response
               voice: 'en-US_AllisonVoice', // Default Watson voice
               autoPlay: true, // Automatically plays audio
-              token: token
+	      token : token,
+              customization_id: 'df91158a-32bc-41b4-b312-4eb5214ceb7e' // custom model fixes Mykie pronunciation
             });
             // When the audio stops playing
             audio.onended = function() {
